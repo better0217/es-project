@@ -1,0 +1,34 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.esproject.mapper.CnsCinfoMapper">
+
+    <insert id="save" parameterType="com.example.esproject.domain.CnsCinfo">
+        INSERT INTO cns_cinfo (
+        ROWGUID, SERIALNUM, RQSTPERSON, RQSTTIME, RQSTNUMBER, LINKNUMBER,
+        RQSTAREACODE, RQSTADDRESS, RQSTTYPE, ACCORDTYPE, RQSTTITLE,
+        RQSTCONTENT, RQSTSOURCE, REGISTERNAME, CSTATUS, ISIMPT, FINISHTIME
+        )
+        VALUES (
+        #{rowGuid}, #{serialNum}, #{rqstPerson}, #{rqstTime}, #{rqstNumber}, #{linkNumber},
+        #{rqstAreaCode}, #{rqstAddress}, #{rqstType}, #{accordType}, #{rqstTitle},
+        #{rqstContent}, #{rqstSource}, #{registerName}, #{cStatus}, #{isImpt}, #{finishTime}
+        )
+        ON DUPLICATE KEY UPDATE
+        SERIALNUM = VALUES(SERIALNUM),
+        RQSTPERSON = VALUES(RQSTPERSON),
+        RQSTTIME = VALUES(RQSTTIME),
+        RQSTNUMBER = VALUES(RQSTNUMBER),
+        LINKNUMBER = VALUES(LINKNUMBER),
+        RQSTAREACODE = VALUES(RQSTAREACODE),
+        RQSTADDRESS = VALUES(RQSTADDRESS),
+        RQSTTYPE = VALUES(RQSTTYPE),
+        ACCORDTYPE = VALUES(ACCORDTYPE),
+        RQSTTITLE = VALUES(RQSTTITLE),
+        RQSTCONTENT = VALUES(RQSTCONTENT),
+        RQSTSOURCE = VALUES(RQSTSOURCE),
+        REGISTERNAME = VALUES(REGISTERNAME),
+        CSTATUS = VALUES(CSTATUS),
+        ISIMPT = VALUES(ISIMPT),
+        FINISHTIME = VALUES(FINISHTIME)
+    </insert>
+
+</mapper>

@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=your_root_password
+      - MYSQL_DATABASE=workorders
+      - MYSQL_USER=your_user
+      - MYSQL_PASSWORD=your_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-net
+
+  rabbitmq:
+    image: rabbitmq:3.10-management
+    container_name: rabbitmq-server
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-net
+
+  es-master-data:
+    image: elasticsearch:8.6.2
+    container_name: es-node-1
+    environment:
+      - node.name=es-node-1
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es-node-1,es-data-1,es-data-2
+      - cluster.initial_master_nodes=es-node-1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false # 新增：禁用安全功能
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data_1:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - app-net
+
+  es-data-1:
+    image: elasticsearch:8.6.2
+    container_name: es-node-2
+    environment:
+      - node.name=es-node-2
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es-node-1,es-data-1,es-data-2
+      - cluster.initial_master_nodes=es-node-1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false # 新增：禁用安全功能
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data_2:/usr/share/elasticsearch/data
+    networks:
+      - app-net
+
+  es-data-2:
+    image: elasticsearch:8.6.2
+    container_name: es-node-3
+    environment:
+      - node.name=es-node-3
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es-node-1,es-data-1,es-data-2
+      - cluster.initial_master_nodes=es-node-1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false # 新增：禁用安全功能
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data_3:/usr/share/elasticsearch/data
+    networks:
+      - app-net
+
+  kibana:
+    image: kibana:8.6.2
+    container_name: kibana-ui
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es-node-1:9200
+    depends_on:
+      - es-master-data
+    networks:
+      - app-net
+
+volumes:
+  mysql_data:
+  rabbitmq_data:
+  es_data_1:
+  es_data_2:
+  es_data_3:
+
+networks:
+  app-net:
+    driver: bridge

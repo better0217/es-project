@@ -1,0 +1,34 @@
+server:
+    port: 8080 # 应用运行端口
+
+spring:
+    application:
+        name: hotline-sync-service
+
+    # ----- DataSource Configuration for MySQL -----
+    datasource:
+        url: jdbc:mysql://localhost:3306/workorders?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        username: your_user       # docker-compose中定义的用户名
+        password: your_password   # docker-compose中定义的密码
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # ----- RabbitMQ Configuration -----
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: guest           # RabbitMQ默认用户名
+        password: guest           # RabbitMQ默认密码
+
+# ----- Elasticsearch Configuration -----
+# Spring Boot 3.x 使用 spring.elasticsearch
+# Spring Boot 2.x 使用 spring.data.elasticsearch.client.reactive.endpoints
+elasticsearch:
+    uris: http://localhost:9200 # ES集群的HTTP入口地址
+
+# ----- MyBatis Configuration -----
+mybatis:
+    # 告诉MyBatis去哪里找Mapper XML文件
+    mapper-locations: classpath:mapper/*.xml
+    # 开启驼峰命名自动转换, 如数据库的 user_name 会自动映射到Java的 userName
+    configuration:
+        map-underscore-to-camel-case: true

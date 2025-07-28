@@ -1,0 +1,30 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.esproject.mapper.CnsEsLogMapper">
+
+    <insert id="save" parameterType="com.example.esproject.domain.CnsEsLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cns_es_log (
+        aggregate_id, aggregate_type, destination, payload, status
+        )
+        VALUES (
+        #{aggregateId}, #{aggregateType}, #{destination}, #{payload}, #{status}
+        )
+    </insert>
+
+    <select id="findPendingRecords" resultType="com.example.esproject.domain.CnsEsLog">
+        SELECT id, aggregate_id, aggregate_type, destination, payload, status, created_at, updated_at
+        FROM cns_es_log
+        WHERE status = 'PENDING'
+        ORDER BY created_at ASC
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE cns_es_log
+        SET status = #{status}
+        WHERE id IN
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>
