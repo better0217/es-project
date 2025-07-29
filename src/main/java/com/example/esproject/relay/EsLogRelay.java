@@ -23,25 +23,22 @@ public class EsLogRelay {
 
     @Scheduled(fixedDelay = 10000) // 每10秒执行一次
     public void pollAndPublish() {
-        // 1. 从数据库捞取待发送的记录
-        List<CnsEsLog> pendingRecords = cnsEsLogMapper.findPendingRecords(BATCH_SIZE);
+        // 只处理失败的记录
+        List<CnsEsLog> failedRecords = cnsEsLogMapper.findFailedRecords(100);
 
-        if (pendingRecords.isEmpty()) {
-            return; // 没有待处理记录, 结束本次任务
+        if (failedRecords.isEmpty()) {
+            return;
         }
 
-        log.info("Found {} pending records to publish.", pendingRecords.size());
+        log.info("重试失败记录: {}", failedRecords.size());
 
-        // 2. 遍历记录并发送到RabbitMQ
-        for (CnsEsLog record : pendingRecords) {
-            // 参数: exchange名字, routingKey (fanout模式下为空), 消息体
-            rabbitTemplate.convertAndSend(record.getDestination(), "", record.getPayload());
+        for (CnsEsLog record : failedRecords) {
+            try {
+                rabbitTemplate.convertAndSend(record.getDestination(), "", record.getPayload());
+                cnsEsLogMapper.updateStatus(record.getId(), "RETRY_SENT");
+            } catch (Exception e) {
+                log.error("重试发送失败: {}", record.getId(), e);
+            }
         }
-
-        // 3. 批量更新已发送记录的状态
-        List<Long> sentIds = pendingRecords.stream().map(CnsEsLog::getId).collect(Collectors.toList());
-        cnsEsLogMapper.updateStatus(sentIds, "SENT");
-
-        log.info("Successfully published {} records.", sentIds.size());
     }
 }

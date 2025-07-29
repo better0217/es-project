@@ -26,5 +26,18 @@
             #{item}
         </foreach>
     </update>
+    <select id="findFailedRecords" resultType="com.example.esproject.domain.CnsEsLog">
+        SELECT * FROM cns_es_log
+        WHERE status IN ('PENDING', 'RETRY_SENT')
+        AND created_at < DATE_SUB(NOW(), INTERVAL 5 MINUTE)  -- 5分钟前的记录
+        ORDER BY created_at ASC
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateStatusByAggregateId">
+        UPDATE cns_es_log
+        SET status = #{status}, updated_at = NOW()
+        WHERE aggregate_id = #{aggregateId}
+    </update>
 
 </mapper>
