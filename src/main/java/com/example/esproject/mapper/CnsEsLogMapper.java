@@ -28,7 +28,4 @@ public interface CnsEsLogMapper {
      * @param status 新的状态, 例如 "SENT"
      */
     void updateStatus(@Param("ids") List<Long> ids, @Param("status") String status);
-    List<CnsEsLog> findFailedRecords(@Param("limit") int limit);
-    void updateStatusByAggregateId(@Param("aggregateId") String aggregateId,
-                                   @Param("status") String status);
 }

@@ -1,0 +1,25 @@
+-- 文件路径: mysql-init-scripts/01_schema.sql
+CREATE TABLE IF NOT EXISTS `cns_cinfo` (
+  `ROWGUID` varchar(50) NOT NULL COMMENT '工单标识, 主键',
+  `SERIALNUM` varchar(50) DEFAULT NULL COMMENT '工单编号',
+  `RQSTPERSON` varchar(50) DEFAULT NULL COMMENT '诉求人',
+  `RQSTTIME` datetime DEFAULT NULL COMMENT '诉求时间',
+  `RQSTNUMBER` varchar(20) DEFAULT NULL COMMENT '诉求号码',
+  `LINKNUMBER` varchar(20) DEFAULT NULL COMMENT '联系号码',
+  `RQSTAREACODE` varchar(32) DEFAULT NULL COMMENT '区域代码',
+  `RQSTADDRESS` varchar(255) DEFAULT NULL COMMENT '具体地址',
+  `RQSTTYPE` varchar(20) DEFAULT NULL COMMENT '诉求类型',
+  `ACCORDTYPE` varchar(20) DEFAULT NULL COMMENT '归口类型',
+  `RQSTTITLE` varchar(255) DEFAULT NULL COMMENT '标题/目的',
+  `RQSTCONTENT` text COMMENT '诉求内容',
+  `RQSTSOURCE` varchar(10) DEFAULT NULL COMMENT '诉求来源',
+  `REGISTERNAME` varchar(20) DEFAULT NULL COMMENT '登记人',
+  `cstatus` varchar(20) DEFAULT NULL COMMENT '工单状态',
+  `ISIMPT` varchar(4) DEFAULT NULL COMMENT '重大/紧急',
+  `FINISHTIME` datetime DEFAULT NULL COMMENT '办结时间',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`ROWGUID`),
+  KEY `idx_serialnum` (`SERIALNUM`),
+  KEY `idx_rqsttime` (`RQSTTIME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='工单信息表';
