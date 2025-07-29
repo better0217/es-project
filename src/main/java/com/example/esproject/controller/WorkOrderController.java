@@ -3,6 +3,7 @@ package com.example.esproject.controller;
 
 import com.example.esproject.document.WorkOrderDocument;
 import com.example.esproject.domain.CnsCinfo;
+import com.example.esproject.dto.DashboardStatsDTO;
 import com.example.esproject.service.WorkOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,5 +41,15 @@ public class WorkOrderController {
     public ResponseEntity<List<WorkOrderDocument>> search(@RequestParam String keyword) { // <-- 修改返回类型
         List<WorkOrderDocument> results = workOrderService.searchWorkOrders(keyword);
         return ResponseEntity.ok(results);
+    }
+    /**
+     * 【V2版 - 已升级】领导驾驶舱统计数据接口, 支持时间范围
+     * @param range 可选参数, "today", "week", "month". 默认为 "today"
+     */
+    @GetMapping("/stats/dashboard")
+    public ResponseEntity<DashboardStatsDTO> getDashboardStats(
+            @RequestParam(defaultValue = "today") String range) {
+        DashboardStatsDTO stats = workOrderService.getDashboardStats(range);
+        return ResponseEntity.ok(stats);
     }
 }
